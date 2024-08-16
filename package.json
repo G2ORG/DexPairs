@@ -51,6 +51,7 @@
   "dependencies": {
     "@node-redis/json": "^1.0.2",
     "compression": "*",
+    "dotenv": "*",
     "express": "*",
     "express-rate-limit": "*",
     "express-ws": "*",

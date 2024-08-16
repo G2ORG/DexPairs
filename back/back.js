@@ -8,6 +8,11 @@ import express from 'express'
 import fetch from 'node-fetch'
 import { createClient } from 'redis'
 
+import dotenv from 'dotenv'
+dotenv.config({
+  path: '.env'
+})
+console.log(process.env.THE_GRAPH_API)
 
 /********************************
 
@@ -37,6 +42,16 @@ const WEEK = 604800000 // 1 week
 const HISTORY_SIZE = process.env.NODE_ENV === 'production' ? 320 : 96 // more data on Prod
 const HISTORY_SIZE_24H = 96 // 24h / 15min
 const TOP_SIZE = 6
+
+const THE_GRAPH_API = process.env.THE_GRAPH_API
+const THE_GRAPH_BASE_URL = `https://gateway.thegraph.com/api/${THE_GRAPH_API}/subgraphs/id`
+
+const THE_GRAPH_UniswapV3Ethereum = THE_GRAPH_BASE_URL + '/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV'
+const THE_GRAPH_UniswapV3Arbitrum = THE_GRAPH_BASE_URL + '/FbCGRftH4a3yZugY7TnbYgPJVEv2LvMT6oF1fxPe9aJM'
+const THE_GRAPH_UniswapV3Optimism = THE_GRAPH_BASE_URL + '/Cghf4LfVqPiFw6fp6Y5X5Ubc8UpmUhSfJL82zwiBFLaj'
+const THE_GRAPH_UniswapV3Polygon = THE_GRAPH_BASE_URL + '/3hCPRGf4z88VC5rsBKU5AA9FBBq5nF3jbKJG7VZCbhjm'
+const THE_GRAPH_PancakeswapV3BNB = THE_GRAPH_BASE_URL + '/A1fvJWQLBeUAggX2WQTMm3FKjXTekNXo77ZySun4YN2m'
+const THE_GRAPH_HoneyswapGnosis = THE_GRAPH_BASE_URL + '/HTxWvPGcZ5oqWLYEVtWnVJDfnai2Ud1WaABiAR72JaSJ'
 
 
 
@@ -77,7 +92,7 @@ async function get(url, query = null) {
 const pancakeswap_request = `
 query
 {
-  tokens(first: 1000, orderBy: totalValueLockedUSD, orderDirection: desc, where: { volumeUSD_gt: "10000", derivedETH_gt: "0", totalValueLockedUSD_gt: "25000" } ) {
+  tokens(first: 400, orderBy: totalValueLockedUSD, orderDirection: desc, where: { volumeUSD_gt: "10000", derivedETH_gt: "0", totalValueLockedUSD_gt: "25000" } ) {
     id
     name
     symbol
@@ -92,7 +107,7 @@ query
 
 // Use TheGraph API - https://thegraph.com/hosted-service/subgraph/pancakeswap/exchange-v3-bsc
 async function getPancakeswapTopTokens() {
-  return await get('https://api.thegraph.com/subgraphs/name/pancakeswap/exchange-v3-bsc', pancakeswap_request)
+  return await get(THE_GRAPH_PancakeswapV3BNB, pancakeswap_request)
 }
 
 
@@ -147,7 +162,7 @@ async function getUniswapV3BNBTopTokens() {
 const uniswapV3_arbitrum_request = `
 query
 {
-  tokens(first: 1000, orderBy: totalValueLockedUSD, orderDirection: desc, where: { volumeUSD_gt: "50000", derivedETH_gt: "0", totalValueLockedUSD_gt: "25000" } ) {
+  tokens(first: 400, orderBy: totalValueLockedUSD, orderDirection: desc, where: { volumeUSD_gt: "50000", derivedETH_gt: "0", totalValueLockedUSD_gt: "25000" } ) {
     id
     name
     symbol
@@ -163,14 +178,14 @@ query
 // Use TheGraph API - https://thegraph.com/hosted-service/subgraph/revert-finance/uniswap-v3-arbitrum
 // https://github.com/revert-finance/uniswap-v3-subgraph
 async function getUniswapV3ArbitrumTopTokens() {
-  return await get('https://api.thegraph.com/subgraphs/name/revert-finance/uniswap-v3-arbitrum', uniswapV3_arbitrum_request)
+  return await get(THE_GRAPH_UniswapV3Arbitrum, uniswapV3_arbitrum_request)
 }
 
 // Get Uniswap v3 top
 const uniswapV3_request = `
 query
 {
-  tokens(first: 1000, orderBy: totalValueLockedUSD, orderDirection: desc, where: { volumeUSD_gt: "10000", derivedETH_gt: "0", totalValueLockedUSD_gt: "50000" } ) {
+  tokens(first: 400, orderBy: totalValueLockedUSD, orderDirection: desc, where: { volumeUSD_gt: "10000", derivedETH_gt: "0", totalValueLockedUSD_gt: "50000" } ) {
     id
     name
     symbol
@@ -185,7 +200,7 @@ query
 
 // Use TheGraph API - https://thegraph.com/hosted-service/subgraph/uniswap/uniswap-v3
 async function getUniswapV3TopTokens() {
-  return await get('https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3', uniswapV3_request)
+  return await get(THE_GRAPH_UniswapV3Ethereum, uniswapV3_request)
 }
 
 // Get Uniswap v2 top
@@ -254,6 +269,30 @@ async function getPolygonSushiSwapTopTokens() {
   return await get('https://api.thegraph.com/subgraphs/name/sushiswap/matic-exchange', polygon_sushiswap_request)
 }
 
+
+// Get Uniswap v3 top on Polygon/Matic
+const uniswapV3Polygon_request = `
+query
+{
+  tokens(first: 400, orderBy: totalValueLockedUSD, orderDirection: desc, where: { volumeUSD_gt: "10000", derivedETH_gt: "0", totalValueLockedUSD_gt: "50000" } ) {
+    id
+    name
+    symbol
+    derivedETH
+    volumeUSD
+  }
+  bundle(id: "1" ) {
+    ethPriceUSD
+  }
+}
+`
+
+// Use TheGraph API - https://thegraph.com/hosted-service/subgraph/uniswap/uniswap-v3
+async function getUniswapV3PolygonTopTokens() {
+  return await get(THE_GRAPH_UniswapV3Polygon, uniswapV3Polygon_request)
+}
+
+
 // Get Spiritswap's top
 const spiritswap_request = `
 query
@@ -280,22 +319,22 @@ async function getSpiritswapTopTokens() {
 const honeyswap_request = `
 query
 {
-  tokens(first: 1000, orderBy: tradeVolumeUSD, orderDirection: desc, where: { tradeVolumeUSD_gt: "100000", derivedETH_gt: "0" } ) {
+  tokens(first: 250, orderBy: tradeVolumeUSD, orderDirection: desc, where: { tradeVolumeUSD_gt: "100000", derivedNativeCurrency_gt: "0" } ) {
     id
     name
     symbol
-    derivedETH
+    derivedNativeCurrency
     tradeVolumeUSD
   }
   bundle(id: "1" ) {
-    ethPrice
+    nativeCurrencyPrice
   }
 }
 `
 
 // Use TheGraph API - https://thegraph.com/explorer/subgraph/kirkins/honeyswap
 async function getHoneyswapTopTokens() {
-  return await get('https://api.thegraph.com/subgraphs/name/kirkins/honeyswap', honeyswap_request)
+  return await get(THE_GRAPH_HoneyswapGnosis, honeyswap_request)
 }
 
 
@@ -431,7 +470,7 @@ async function launchGnosis() {
   const time = Date.now()
   const tokens = top.data ? top.data.tokens : []
 
-  const xdai_price = top.data ? top.data.bundle.ethPrice : 0
+  const xdai_price = top.data ? top.data.bundle.nativeCurrencyPrice : 0
   if(xdai_price === 0 || tokens.length === 0) return
 
   try {
@@ -446,7 +485,7 @@ async function launchGnosis() {
       address: token.id,
       symbol: token.symbol,
       name: token.name,
-      price: token.derivedETH * xdai_price,
+      price: token.derivedNativeCurrency * xdai_price,
       volumeUSD: token.tradeVolumeUSD
     }
 
@@ -480,12 +519,12 @@ async function launchPolygon() {
   let data = {}
 
   // get data from Uniswap
-  const top = await getQuickswapV3TopTokens()
+  const top = await getUniswapV3PolygonTopTokens()
 
   const time = Date.now()
   const tokens = top.data ? top.data.tokens : []
 
-  const matic_price = top.data ? top.data.bundle.maticPriceUSD : 0
+  const matic_price = top.data ? top.data.bundle.ethPriceUSD : 0
   if(matic_price === 0 || tokens.length === 0) return
 
   try {
@@ -500,7 +539,7 @@ async function launchPolygon() {
       address: token.id,
       symbol: token.symbol,
       name: token.name,
-      price: token.derivedMatic * matic_price,
+      price: token.derivedETH * matic_price,
       volumeUSD: token.volumeUSD
     }
 
@@ -790,7 +829,7 @@ async function main() {
 
   setTimeout(launchPolygon, 20000)
 
-  setTimeout(launchFantom, 25000)
+  // setTimeout(launchFantom, 25000)
 
   setTimeout(launchArbitrum, 30000)
 

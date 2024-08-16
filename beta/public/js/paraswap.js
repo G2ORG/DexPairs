@@ -27,7 +27,7 @@ const configureParaswap = (srcToken, destToken, amount, srcDecimals, destDecimal
 }
 
 const setParaswapAmount = (amount) => {
-  paraswapAmount = Math.floor(Number(amount) * Math.pow(10, paraswapSrcDecimals))
+  paraswapAmount = Math.floor(Number(amount) * Math.pow(10, Number(paraswapSrcDecimals)))
   setQueries()
 }
 
@@ -49,5 +49,5 @@ const getParaswapPrices = async () => {
   let response = await get(paraswapPricesQuery)
   console.log(response)
   paraswapTransferProxy = response.priceRoute.tokenTransferProxy
-  return Number(response.priceRoute.destAmount) * Math.pow(10, -paraswapDestDecimals)
+  return Number(response.priceRoute.destAmount) * Math.pow(10, -Number(paraswapDestDecimals))
 }

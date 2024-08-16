@@ -668,7 +668,7 @@ async function getContractAddressPrice(transaction, network, balance = 1) {
 	}
 	// Balancer Pool
 	else if(transaction.tokenSymbol?.startsWith('B-') && balance > 0) {
-		price = await getPriceFromBalancerPool(transaction.contractAddress, transaction.tokenSymbol, balance, network)
+		//price = await getPriceFromBalancerPool(transaction.contractAddress, transaction.tokenSymbol, balance, network)
 		if(price) {
 			return price
 		}
@@ -1282,7 +1282,7 @@ function displayTransactions() {
 			if(tx.tokenDecimal) {
 				spanBalance.innerHTML = sign + calculateBalance(tx.value, tx.tokenDecimal)
 			} else {
-				spanBalance.innerHTML = sign + web3.utils.fromWei(tx.value)
+				spanBalance.innerHTML = sign + web3.utils.fromWei(tx.value, 'ether')
 			}
 			spanBalance.classList.add('txBalance')
 			li.appendChild(spanBalance)
@@ -1549,22 +1549,22 @@ function simpleDataTimers() {
 	Object.keys(NETWORK).filter((network) => typeof NETWORK[network].url_data === 'string').forEach((network, i) => {
 		setTimeout(() => getSimpleData(NETWORK[network].enum, displayWallet), (i+1) * 250)
 		if(network === NETWORK.ETHEREUM.enum) {
-			getAaveEthereumUnderlyingAddresses(displayWallet)
-			getCompoundEthereumUnderlyingAddresses(displayWallet)
-			getAaveV3UnderlyingAddresses(displayWallet)
+			//getAaveEthereumUnderlyingAddresses(displayWallet)
+			//getCompoundEthereumUnderlyingAddresses(displayWallet)
+			//getAaveV3UnderlyingAddresses(displayWallet)
 		} else if(network === NETWORK.POLYGON.enum) {
-			getAavePolygonUnderlyingAddresses(displayWallet)
-			getAaveV3PolygonUnderlyingAddresses(displayWallet)
+			//getAavePolygonUnderlyingAddresses(displayWallet)
+			//getAaveV3PolygonUnderlyingAddresses(displayWallet)
 		} else if(network === NETWORK.XDAI.enum) {
-			getRmmGnosisUnderlyingAddresses(displayWallet)
+			//getRmmGnosisUnderlyingAddresses(displayWallet)
 		} else if(network === NETWORK.BSC.enum) {
-			getVenusBscUnderlyingAddresses(displayWallet)
+			//getVenusBscUnderlyingAddresses(displayWallet)
 		} else if(network === NETWORK.ARBITRUM_ONE.enum) {
-			getAaveV3ArbitrumUnderlyingAddresses(displayWallet)
+			//getAaveV3ArbitrumUnderlyingAddresses(displayWallet)
 		} /*else if(network === NETWORK.OPTIMISM.enum) {
 			getAaveV3OptimismUnderlyingAddresses(displayWallet)
 		}*/ else if(network === NETWORK.AVALANCHE.enum) {
-			getAaveV3AvalancheUnderlyingAddresses(displayWallet)
+			//getAaveV3AvalancheUnderlyingAddresses(displayWallet)
 		}
 	})
 	setTimeout(simpleDataTimers, 100000)
@@ -2039,8 +2039,8 @@ const sortWallet = (a, b) => {
 	if(NETWORK[b.network].tokenContract === b.contract) return 1
 	// then sort by price value
 	if(a.price && b.price) {
-		if(a.value * a.price > b.value * b.price) return -1
-		if(a.value * a.price < b.value * b.price) return 1
+		if(Number(a.value) * a.price > Number(b.value) * b.price) return -1
+		if(Number(a.value) * a.price < Number(b.value) * b.price) return 1
 	}
 	if(!a.price && b.price) return 1
 	if(a.price && !b.price) return -1
@@ -2129,15 +2129,15 @@ const filteredNFTTokens = () => {
 
 /* Utils - Calculate balance from value */
 const calculateBalance = (balance, decimal) => {
-	if(balance && Math.abs(balance) > 0) {
-		return precise(balance * (decimal ? Math.pow(10, -decimal) : 1))
+	if(balance && Math.abs(Number(balance)) > 0) {
+		return precise(Number(balance) * (decimal ? Math.pow(10, -decimal) : 1))
 	}
 	return 0
 }
 /* Utils - Calculate value from value */
 const calculateValue = (balance, price, decimal) => {
-	if(balance && price && Math.abs(balance * price) > 0) {
-		return calculateBalance(balance * price, decimal)
+	if(balance && price && Math.abs(Number(balance) * price) > 0) {
+		return calculateBalance(Number(balance) * price, decimal)
 	}
 	return 0
 }
@@ -2150,7 +2150,7 @@ const displayBalance = (value, decimal) => {
 }
 /* Utils - Display dollar value readable by human */
 const displayValue = (balance, price, decimal) => {
-	const value = calculateBalance(balance * price, decimal)
+	const value = calculateBalance(Number(balance) * price, decimal)
 	if(value === 0) return 0
 	if(Math.abs(value) < 0.01) return '≈ 0'
 	return '$' + value

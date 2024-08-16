@@ -5,8 +5,9 @@ import cp from 'child_process'
 const backFolder = './back'
 
 
-const MAIN_TIMEOUT = process.env.NODE_ENV === 'production' ? 45000 : 120000 // 45 or 120 seconds
-const COINGECKO_TIMEOUT = process.env.NODE_ENV === 'production' ? 20000 : 45000 // 20 or 45 seconds
+
+const MAIN_TIMEOUT = process.env.NODE_ENV === 'production' ? 720000 : 360000 // 12 minutes or 6 minutes
+const COINGECKO_TIMEOUT = process.env.NODE_ENV === 'production' ? 25000 : 45000 // 25 or 45 seconds
 
 
 start()

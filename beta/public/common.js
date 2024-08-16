@@ -134,7 +134,7 @@ const NETWORK = {
 		shortName: 'bnb',
 		img: '/img/bsc-icon.svg',
 		color: '#f0b931',
-		rpc: 'https://1rpc.io/bnb',
+		rpc: 'https://bsc.meowrpc.com', // https://1rpc.io/bnb
 		explorer: 'https://bscscan.com/token/',
 		normaltx: 'https://api.bscscan.com/api?module=account&action=txlist&address=WALLET_ADDRESS&startblock=START_BLOCK&sort=asc',
 		tokentx: 'https://api.bscscan.com/api?module=account&action=tokentx&address=WALLET_ADDRESS&startblock=START_BLOCK&sort=asc',
@@ -232,10 +232,10 @@ const NETWORK = {
 		tokenPriceContract: '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83',
 		subgraph_url: 'https://thegraph.com/hosted-service/subgraph/layer3org/spiritswap-analytics',
 		coingecko_name: 'fantom',
-		tokens: {
-			token: '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83',
-			base: '0x04068da6c83afcfa0e13ba15a6696662335d5b75'
-		},
+		// tokens: {
+		// 	token: '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83',
+		// 	base: '0x04068da6c83afcfa0e13ba15a6696662335d5b75'
+		// },
 		url: 'https://www.spiritswap.finance/',
 		url_swap: 'https://swap.spiritswap.finance/#/swap'
 	},
@@ -438,6 +438,13 @@ async function get(url, query = null) {
 			.catch(reject)
 	})
 }
+
+Object.defineProperty(BigInt.prototype, "toJSON", {
+	get() {
+		"use strict"
+		return () => String(this)
+	}
+})
 
 
 

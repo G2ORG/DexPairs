@@ -969,7 +969,7 @@ const setSwapper = async () => {
 		// document.getElementById('paraswap_dest_amount').value = null
 		const srcDecimals = await getTokenDecimals(selectedToken, chain)
 		const destDecimals = await getTokenDecimals(selectedBase, chain)
-		let srcBalance = (await getTokenBalanceWeb3(selectedToken, walletConnected, chain)) * Math.pow(10, -srcDecimals)
+		let srcBalance = (await getTokenBalanceWeb3(selectedToken, walletConnected, chain)) * Math.pow(10, -Number(srcDecimals))
 		if(!srcBalance || srcBalance === 0) {
 			//document.getElementById('paraswap_src_max_amount').classList.toggle('none', true)
 		} else {
