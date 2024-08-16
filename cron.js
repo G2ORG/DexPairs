@@ -6,7 +6,7 @@ const backFolder = './back'
 
 
 
-const MAIN_TIMEOUT = process.env.NODE_ENV === 'production' ? 720000 : 360000 // 12 minutes or 6 minutes
+const MAIN_TIMEOUT = process.env.NODE_ENV === 'production' ? 920000 : 360000 // 15,33 minutes or 6 minutes
 const COINGECKO_TIMEOUT = process.env.NODE_ENV === 'production' ? 25000 : 45000 // 25 or 45 seconds
 
 
